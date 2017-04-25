@@ -23,13 +23,14 @@ public class Sistema {
 	
 	public boolean logOffMaster(){
 		souBibliotecaria = false;
-		return false;
+		return true;
 	}
 	
 	public boolean logInUsuario(Usuario _usuario){
 		if(!acessarSistema(_usuario)){
 			return false;
 		}
+		souBibliotecaria = false;
 		this._usuario = _usuario;
 		return true;
 	}
@@ -74,6 +75,30 @@ public class Sistema {
 	}
 	
 	public Livro pegarLivro(String nome){
+		if(_usuario==null||souBibliotecaria){
+			return null;
+		}
+		if(bd.tempoDeBloqueio(_usuario)>0){
+			return null;
+		}
 		return bd.pegarLivro(_usuario, nome);		
+	}
+	
+	public boolean registrarEmprestimoDeLivro(Usuario user, Livro livro, int tempo){
+		if(!souBibliotecaria){
+			return false;
+		}
+		doReturn(null).when(bd).pegarLivro(isA(Usuario.class), eq(livro.getNome()));
+		bloquearUsuario(_usuario, tempo);
+		return true;
+	}
+	
+	public boolean registrarDevolucaoDeLivro(Usuario user, Livro livro){
+		if(!souBibliotecaria){
+			return false;
+		}
+		doReturn(livro).when(bd).pegarLivro(isA(Usuario.class), eq(livro.getNome()));
+		bloquearUsuario(_usuario, 0);
+		return true;
 	}
 }

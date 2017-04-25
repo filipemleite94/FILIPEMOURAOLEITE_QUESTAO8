@@ -28,6 +28,6 @@ public class BD {
 		if(!podePegarLivro(_usuario)){
 			return null;
 		}
-		return new Livro();
+		return new Livro("Nome");
 	}
 }
